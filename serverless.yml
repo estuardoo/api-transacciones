@@ -39,10 +39,6 @@ resources:
         AttributeDefinitions:
           - AttributeName: ComercioID
             AttributeType: N
-          - AttributeName: RUC
-            AttributeType: S
-          - AttributeName: Estado
-            AttributeType: S
         KeySchema:
           - AttributeName: ComercioID
             KeyType: HASH
@@ -71,3 +67,4 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+YAML
