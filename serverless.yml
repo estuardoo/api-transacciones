@@ -1,0 +1,73 @@
+org: estuardoo
+service: api-transacciones
+
+provider:
+  name: aws
+  runtime: python3.13
+  region: us-east-1
+  memorySize: 1024
+  timeout: 20
+  iam:
+    role: arn:aws:iam::102362304326:role/LabRole
+  environment:
+    TABLA_TRANSACCION: TablaTransaccion
+
+functions:
+  BusquedaTransaccion:
+    handler: BusquedaTransaccion.lambda_handler
+    events:
+      - http:
+          path: /transacciones/buscar-por-id
+          method: get
+          cors: true
+
+  BusquedaCliente:
+    handler: BusquedaCliente.lambda_handler
+    events:
+      - http:
+          path: /transacciones/buscar-por-cliente
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    TablaComercio:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TablaComercio
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: ComercioID
+            AttributeType: N
+          - AttributeName: RUC
+            AttributeType: S
+          - AttributeName: Estado
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ComercioID
+            KeyType: HASH
+
+    TablaTransaccion:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TablaTransaccion
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: TransaccionID
+            AttributeType: S
+          - AttributeName: ClienteID
+            AttributeType: N
+          - AttributeName: FechaHoraISO
+            AttributeType: S
+        KeySchema:
+          - AttributeName: TransaccionID
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: GSI_Cliente_Fecha
+            KeySchema:
+              - AttributeName: ClienteID
+                KeyType: HASH
+              - AttributeName: FechaHoraISO
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL

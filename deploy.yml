@@ -1,0 +1,17 @@
+name: Deploy API Transacciones
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::102362304326:role/GitHubActionsDeployRole
+          aws-region: us-east-1
+      - run: npm install -g serverless
+      - run: sls deploy --region us-east-1 --stage dev
