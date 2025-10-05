@@ -1,3 +1,4 @@
+
 org: estuardoo
 service: api-transacciones
 
@@ -11,6 +12,7 @@ provider:
     role: arn:aws:iam::102362304326:role/LabRole
   environment:
     TABLA_TRANSACCION: TablaTransaccion
+    TABLA_COMERCIO: TablaComercio
 
 functions:
   BusquedaTransaccion:
@@ -27,6 +29,22 @@ functions:
       - http:
           path: /transacciones/buscar-por-cliente
           method: get
+          cors: true
+
+  ImportComercios:
+    handler: ImportComercios.lambda_handler
+    events:
+      - http:
+          path: /import/comercios
+          method: post
+          cors: true
+
+  ImportTransacciones:
+    handler: ImportTransacciones.lambda_handler
+    events:
+      - http:
+          path: /import/transacciones
+          method: post
           cors: true
 
 resources:
