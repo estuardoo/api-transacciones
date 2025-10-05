@@ -7,11 +7,7 @@ INDEX = "GSI_Cliente_Fecha"
 dynamodb = boto3.resource("dynamodb")
 
 def _resp(code, data):
-    return {
-        "statusCode": code,
-        "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"},
-        "body": json.dumps(data)
-    }
+    return {"statusCode": code, "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}, "body": json.dumps(data)}
 
 def lambda_handler(event, context):
     params = event.get("queryStringParameters") or {}

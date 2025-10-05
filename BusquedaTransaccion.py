@@ -5,18 +5,13 @@ TABLE_NAME = os.environ.get("TABLA_TRANSACCION", "TablaTransaccion")
 dynamodb = boto3.resource("dynamodb")
 
 def _resp(code, data):
-    return {
-        "statusCode": code,
-        "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"},
-        "body": json.dumps(data)
-    }
+    return {"statusCode": code, "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}, "body": json.dumps(data)}
 
 def lambda_handler(event, context):
     params = event.get("queryStringParameters") or {}
     tid = params.get("TransaccionID")
     if not tid:
         return _resp(400, {"ok": False, "msg": "Falta TransaccionID"})
-
     table = dynamodb.Table(TABLE_NAME)
     try:
         r = table.get_item(Key={"TransaccionID": tid})
