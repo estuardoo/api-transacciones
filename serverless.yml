@@ -1,4 +1,3 @@
-
 org: estuardoo
 service: api-transacciones
 
@@ -31,19 +30,35 @@ functions:
           method: get
           cors: true
 
-  ImportComercios:
-    handler: ImportComercios.lambda_handler
+  BusquedaUsuario:
+    handler: BusquedaUsuario.lambda_handler
     events:
       - http:
-          path: /import/comercios
+          path: /transacciones/buscar-por-usuario
+          method: get
+          cors: true
+
+  BusquedaUsuarioRango:
+    handler: BusquedaUsuarioRango.lambda_handler
+    events:
+      - http:
+          path: /transacciones/buscar-por-usuario-rango
+          method: get
+          cors: true
+
+  CargarComercios:
+    handler: CargarComercios.lambda_handler
+    events:
+      - http:
+          path: /comercios/cargar
           method: post
           cors: true
 
-  ImportTransacciones:
-    handler: ImportTransacciones.lambda_handler
+  CargarTransacciones:
+    handler: CargarTransacciones.lambda_handler
     events:
       - http:
-          path: /import/transacciones
+          path: /transacciones/cargar
           method: post
           cors: true
 
@@ -73,6 +88,8 @@ resources:
             AttributeType: N
           - AttributeName: FechaHoraISO
             AttributeType: S
+          - AttributeName: Usuario
+            AttributeType: S
         KeySchema:
           - AttributeName: TransaccionID
             KeyType: HASH
@@ -80,6 +97,14 @@ resources:
           - IndexName: GSI_Cliente_Fecha
             KeySchema:
               - AttributeName: ClienteID
+                KeyType: HASH
+              - AttributeName: FechaHoraISO
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: GSI_Usuario_Fecha
+            KeySchema:
+              - AttributeName: Usuario
                 KeyType: HASH
               - AttributeName: FechaHoraISO
                 KeyType: RANGE
