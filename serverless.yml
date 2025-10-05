@@ -1,6 +1,5 @@
 org: estuardoo
 service: api-transacciones
-
 provider:
   name: aws
   runtime: python3.13
@@ -22,6 +21,14 @@ functions:
           method: get
           cors: true
 
+  BusquedaComercio:
+    handler: BusquedaComercio.lambda_handler
+    events:
+      - http:
+          path: /transacciones/buscar-por-comercio
+          method: get
+          cors: true
+
   BusquedaCliente:
     handler: BusquedaCliente.lambda_handler
     events:
@@ -30,19 +37,11 @@ functions:
           method: get
           cors: true
 
-  BusquedaUsuario:
-    handler: BusquedaUsuario.lambda_handler
+  BusquedaClienteRango:
+    handler: BusquedaClienteRango.lambda_handler
     events:
       - http:
-          path: /transacciones/buscar-por-usuario
-          method: get
-          cors: true
-
-  BusquedaUsuarioRango:
-    handler: BusquedaUsuarioRango.lambda_handler
-    events:
-      - http:
-          path: /transacciones/buscar-por-usuario-rango
+          path: /transacciones/buscar-por-cliente-rango
           method: get
           cors: true
 
@@ -83,12 +82,12 @@ resources:
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: TransaccionID
-            AttributeType: S
+            AttributeType: N
           - AttributeName: ClienteID
             AttributeType: N
+          - AttributeName: ComercioID
+            AttributeType: N
           - AttributeName: FechaHoraISO
-            AttributeType: S
-          - AttributeName: Usuario
             AttributeType: S
         KeySchema:
           - AttributeName: TransaccionID
@@ -102,9 +101,9 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-          - IndexName: GSI_Usuario_Fecha
+          - IndexName: GSI_Comercio_Fecha
             KeySchema:
-              - AttributeName: Usuario
+              - AttributeName: ComercioID
                 KeyType: HASH
               - AttributeName: FechaHoraISO
                 KeyType: RANGE
