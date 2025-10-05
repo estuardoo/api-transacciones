@@ -1,5 +1,7 @@
+
 org: estuardoo
 service: api-transacciones
+
 provider:
   name: aws
   runtime: python3.13
@@ -21,14 +23,6 @@ functions:
           method: get
           cors: true
 
-  BusquedaComercio:
-    handler: BusquedaComercio.lambda_handler
-    events:
-      - http:
-          path: /transacciones/buscar-por-comercio
-          method: get
-          cors: true
-
   BusquedaCliente:
     handler: BusquedaCliente.lambda_handler
     events:
@@ -37,27 +31,19 @@ functions:
           method: get
           cors: true
 
-  BusquedaClienteRango:
-    handler: BusquedaClienteRango.lambda_handler
+  ImportComercios:
+    handler: ImportComercios.lambda_handler
     events:
       - http:
-          path: /transacciones/buscar-por-cliente-rango
-          method: get
-          cors: true
-
-  CargarComercios:
-    handler: CargarComercios.lambda_handler
-    events:
-      - http:
-          path: /comercios/cargar
+          path: /import/comercios
           method: post
           cors: true
 
-  CargarTransacciones:
-    handler: CargarTransacciones.lambda_handler
+  ImportTransacciones:
+    handler: ImportTransacciones.lambda_handler
     events:
       - http:
-          path: /transacciones/cargar
+          path: /import/transacciones
           method: post
           cors: true
 
@@ -82,10 +68,8 @@ resources:
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: TransaccionID
-            AttributeType: N
+            AttributeType: S
           - AttributeName: ClienteID
-            AttributeType: N
-          - AttributeName: ComercioID
             AttributeType: N
           - AttributeName: FechaHoraISO
             AttributeType: S
@@ -96,14 +80,6 @@ resources:
           - IndexName: GSI_Cliente_Fecha
             KeySchema:
               - AttributeName: ClienteID
-                KeyType: HASH
-              - AttributeName: FechaHoraISO
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-          - IndexName: GSI_Comercio_Fecha
-            KeySchema:
-              - AttributeName: ComercioID
                 KeyType: HASH
               - AttributeName: FechaHoraISO
                 KeyType: RANGE
