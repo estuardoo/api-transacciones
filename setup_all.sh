@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-echo 'Configurando entorno AWS + GitHub para api-transacciones...'
+set -euo pipefail
+echo 'Setup placeholder. Automatiza roles/CI si lo deseas.'
