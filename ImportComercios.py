@@ -20,8 +20,7 @@ def _resp(code, data):
 
 def lambda_handler(event, context):
     try:
-        body = event.get("body") or "[]"
-        items = json.loads(body)
+        items = json.loads(event.get("body") or "[]")
         if not isinstance(items, list):
             return _resp(400, {"ok": False, "msg": "El body debe ser un JSON array de objetos"})
         count = 0
@@ -30,12 +29,8 @@ def lambda_handler(event, context):
                 if "ComercioID" not in it:
                     continue
                 clean = {k: v for k, v in it.items() if v is not None}
-                try:
-                    clean["ComercioID"] = int(clean["ComercioID"])
-                except Exception:
-                    return _resp(400, {"ok": False, "msg": "ComercioID debe ser numérico"})
-                bw.put_item(Item=clean)
-                count += 1
+                clean["ComercioID"] = int(clean["ComercioID"])
+                bw.put_item(Item=clean); count += 1
         return _resp(200, {"ok": True, "insertados": count})
     except ClientError as e:
         return _resp(500, {"ok": False, "msg": e.response["Error"]["Message"]})

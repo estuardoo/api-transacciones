@@ -8,7 +8,11 @@ INDEX = "GSI_Cliente_Fecha"
 dynamodb = boto3.resource("dynamodb")
 
 def _resp(code, data):
-    return {"statusCode": code, "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}, "body": json.dumps(data)}
+    return {
+        "statusCode": code,
+        "headers": {"Content-Type":"application/json","Access-Control-Allow-Origin":"*"},
+        "body": json.dumps(data)
+    }
 
 def lambda_handler(event, context):
     params = event.get("queryStringParameters") or {}
@@ -17,7 +21,11 @@ def lambda_handler(event, context):
         return _resp(400, {"ok": False, "msg": "Falta ClienteID"})
     table = dynamodb.Table(TABLE_NAME)
     try:
-        resp = table.query(IndexName=INDEX, KeyConditionExpression=Key("ClienteID").eq(int(cid)))
+        resp = table.query(
+            IndexName=INDEX,
+            KeyConditionExpression=Key("ClienteID").eq(int(cid)),
+            ScanIndexForward=False  # ordenado por FechaHoraISO desc
+        )
         return _resp(200, {"ok": True, "data": resp.get("Items", [])})
     except ClientError as e:
         return _resp(500, {"ok": False, "msg": e.response["Error"]["Message"]})

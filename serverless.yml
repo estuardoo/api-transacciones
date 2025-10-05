@@ -15,6 +15,7 @@ provider:
     TABLA_COMERCIO: TablaComercio
 
 functions:
+  # === GETs ===
   BusquedaTransaccion:
     handler: BusquedaTransaccion.lambda_handler
     events:
@@ -31,6 +32,23 @@ functions:
           method: get
           cors: true
 
+  BusquedaClienteRango:
+    handler: BusquedaClienteRango.lambda_handler
+    events:
+      - http:
+          path: /transacciones/buscar-por-cliente-fechas
+          method: get
+          cors: true
+
+  BusquedaComercio:
+    handler: BusquedaComercio.lambda_handler
+    events:
+      - http:
+          path: /transacciones/buscar-por-comercio
+          method: get
+          cors: true
+
+  # === POSTs (importación) ===
   ImportComercios:
     handler: ImportComercios.lambda_handler
     events:
@@ -71,6 +89,8 @@ resources:
             AttributeType: S
           - AttributeName: ClienteID
             AttributeType: N
+          - AttributeName: ComercioID
+            AttributeType: N
           - AttributeName: FechaHoraISO
             AttributeType: S
         KeySchema:
@@ -80,6 +100,14 @@ resources:
           - IndexName: GSI_Cliente_Fecha
             KeySchema:
               - AttributeName: ClienteID
+                KeyType: HASH
+              - AttributeName: FechaHoraISO
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: GSI_Comercio_Fecha
+            KeySchema:
+              - AttributeName: ComercioID
                 KeyType: HASH
               - AttributeName: FechaHoraISO
                 KeyType: RANGE
